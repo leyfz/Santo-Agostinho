@@ -1,137 +1,526 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Santo Agostinho - Vida e Legado</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; padding: 0;
-    background: #faf8f0;
-    color: #333;
-    line-height: 1.6;
-  }
-  header {
-    background: #4b5320;
-    color: white;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 2.8rem;
-  }
-  nav {
-    background: #6b8e23;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    padding: 1rem 0;
-  }
-  nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-  nav a:hover {
-    text-decoration: underline;
-  }
-  main {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-  section {
-    margin-bottom: 3rem;
-  }
-  h2 {
-    border-bottom: 2px solid #6b8e23;
-    padding-bottom: 0.5rem;
-    color: #4b5320;
-  }
-  img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  blockquote {
-    font-style: italic;
-    color: #555;
-    border-left: 4px solid #6b8e23;
-    margin: 1rem 0;
-    padding-left: 1rem;
-    background: #f0f4e7;
-  }
-  footer {
-    background: #4b5320;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    font-size: 0.9rem;
-  }
-  @media (max-width: 600px) {
-    nav {
-      flex-direction: column;
-      gap: 1rem;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Santo Agostinho — Enciclopédia Interativa</title>
+  <meta name="description" content="SPA completa em HTML/CSS/JS com rotas, tema dinâmico, busca, quiz e conteúdo sobre Santo Agostinho." />
+  <meta name="theme-color" content="#0ea5e9" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🕊️</text></svg>">
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel:#121a33;
+      --text:#e6ecff;
+      --muted:#97a4c1;
+      --accent:#0ea5e9;
+      --accent-2:#22d3ee;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(2,8,23,.3);
+      --font:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --font-size:16px;
+      --maxw:1100px;
     }
-  }
-</style>
+    [data-theme="light"]{
+      --bg:#f7fafc; --panel:#ffffff; --text:#0f172a; --muted:#475569; --accent:#2563eb; --accent-2:#22d3ee;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--font); font-size:var(--font-size); color:var(--text);
+      background: radial-gradient(1200px 600px at 10% 0%, rgba(34,211,238,.06), transparent 60%),
+                  radial-gradient(1000px 600px at 90% 20%, rgba(14,165,233,.08), transparent 60%),
+                  var(--bg);
+      line-height:1.6;
+    }
+    a{color:inherit; text-decoration:none}
+    .app{display:grid; grid-template-columns: 260px 1fr; min-height:100vh}
+    nav{
+      position:sticky; top:0; align-self:start; height:100vh; overflow:auto;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--panel);
+      border-right:1px solid rgba(255,255,255,.06); padding:18px; backdrop-filter: blur(6px);
+    }
+    nav .brand{display:flex; align-items:center; gap:12px; margin-bottom:14px}
+    .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    .brand h1{font-size:1.1rem;letter-spacing:.3px;margin:0}
+    .search{position:relative;margin:14px 0}
+    .search input{
+      width:100%; padding:12px 14px 12px 38px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.15); color:var(--text)
+    }
+    .search svg{position:absolute; left:10px; top:10px; opacity:.7}
+    .menu{display:grid; gap:6px; margin-top:8px}
+    .menu a{padding:10px 12px; border-radius:12px; color:var(--text); opacity:.85}
+    .menu a.active, .menu a:hover{background:rgba(255,255,255,.08); opacity:1}
+    .panel{background:var(--panel); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow)}
+    header.top{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px 20px; position:sticky; top:0; z-index:2; backdrop-filter: blur(6px); background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.1)), transparent}
+    main{padding:22px; max-width:var(--maxw); width:100%; margin:0 auto}
+    .grid{display:grid; gap:18px}
+    .cols-3{grid-template-columns:repeat(3,1fr)}
+    .cols-2{grid-template-columns:repeat(2,1fr)}
+    .card{padding:18px}
+    .muted{color:var(--muted)}
+    .tag{font-size:.75rem; padding:2px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.15)}
+    .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+    button, .btn{cursor:pointer; border:0; padding:10px 14px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; box-shadow:var(--shadow)}
+    .ghost{background:transparent; border:1px solid rgba(255,255,255,.16); color:var(--text)}
+    .fab{
+      position: fixed; right: 16px; bottom: 16px; width: 52px; height: 52px; border-radius: 50%; display:grid; place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; box-shadow:var(--shadow); z-index:5
+    }
+    .drawer{position:fixed; right:12px; top:12px; width:min(360px, 92vw); max-height:88vh; overflow:auto; padding:18px; transform:translateY(-8px); display:none}
+    .drawer.open{display:block}
+    .kv{display:grid; grid-template-columns: 1.1fr .9fr; gap:18px; align-items:center}
+    .hero{padding:28px; background:radial-gradient(600px 300px at 10% 0%, rgba(34,211,238,.08), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.04), transparent), var(--panel)}
+    .hero h2{margin:0 0 10px}
+    .list{display:grid; gap:10px}
+    .list .row{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px dashed rgba(255,255,255,.08)}
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.8rem; padding:.2em .45em; border-radius:8px; background:rgba(255,255,255,.08)}
+    .foot{padding:16px; text-align:center; color:var(--muted)}
+    .chip{display:inline-grid; grid-auto-flow:column; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    .timeline{position:relative; margin:4px 0}
+    .timeline::before{content:""; position:absolute; left:10px; top:0; bottom:0; width:2px; background:linear-gradient(var(--accent), transparent)}
+    .event{display:grid; grid-template-columns: 28px 1fr; gap:12px; padding:10px 0}
+    .event .dot{width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); margin-left:2px; box-shadow:0 0 0 4px rgba(34,211,238,.15)}
+    .quiz-q{margin:12px 0; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,.12)}
+    .kbd-tip{font-size:.85rem; opacity:.85}
+    .skip{position:absolute; left:-2000px}
+    .skip:focus{left:10px; top:10px; z-index:10}
+    @media (max-width: 960px){
+      .app{grid-template-columns: 1fr}
+      nav{position:static; height:auto}
+      .kv{grid-template-columns:1fr}
+      header.top{position:static}
+    }
+  </style>
 </head>
 <body>
+  <a href="#conteudo" class="skip kbd">Pular para o conteúdo</a>
+  <div class="app" id="app">
+    <nav aria-label="Navegação principal">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">📜</div>
+        <h1>Santo Agostinho</h1>
+      </div>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input aria-label="Buscar" id="search" placeholder="Busque por conceitos, obras, frases..." />
+      </div>
+      <div class="menu" role="menu">
+        <a href="#/" data-route role="menuitem">Início</a>
+        <a href="#/vida" data-route role="menuitem">Vida</a>
+        <a href="#/obras" data-route role="menuitem">Obras</a>
+        <a href="#/frases" data-route role="menuitem">Frases</a>
+        <a href="#/teologia" data-route role="menuitem">Teologia</a>
+        <a href="#/linha-do-tempo" data-route role="menuitem">Linha do Tempo</a>
+        <a href="#/quiz" data-route role="menuitem">Quiz</a>
+        <a href="#/bibliografia" data-route role="menuitem">Bibliografia</a>
+        <a href="#/sobre" data-route role="menuitem">Sobre o Site</a>
+      </div>
+      <div style="height:10px"></div>
+      <div class="panel card">
+        <div class="list">
+          <div class="row"><span class="muted">Tema</span>
+            <div class="toolbar">
+              <button class="ghost" id="toggleTheme" aria-pressed="false">Alternar tema</button>
+              <label class="chip">Acento
+                <input type="color" id="accentPicker" value="#0ea5e9" aria-label="Cor de acento" />
+              </label>
+            </div>
+          </div>
+          <div class="row"><span class="muted">Tipografia</span>
+            <div class="toolbar">
+              <button class="ghost" id="fontMinus" title="Diminuir" aria-label="Diminuir fonte">A-</button>
+              <span class="tag" id="fontSizeLabel">16px</span>
+              <button class="ghost" id="fontPlus" title="Aumentar" aria-label="Aumentar fonte">A+</button>
+            </div>
+          </div>
+          <div class="row"><span class="muted">Acessibilidade</span>
+            <div class="toolbar">
+              <span class="chip"><kbd class="kbd">/</kbd> para buscar</span>
+              <span class="chip">Tab navega • <span class="kbd">Alt</span>+<span class="kbd">K</span> atalhos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="foot">Feito como SPA HTML + JS. Offline pronto ✓</footer>
+    </nav>
 
-<header>
-  <h1>Santo Agostinho</h1>
-  <nav>
-    <a href="#biografia">Biografia</a>
-    <a href="#obras">Obras</a>
-    <a href="#citacoes">Citações</a>
-    <a href="#linha-do-tempo">Linha do Tempo</a>
-  </nav>
-</header>
+    <section id="conteudo">
+      <header class="top">
+        <div class="toolbar">
+          <span class="tag" id="routeTag">/</span>
+          <span class="muted">Enciclopédia interativa sobre o filósofo e teólogo</span>
+        </div>
+        <div class="toolbar">
+          <button id="openCustomizer" class="ghost" aria-haspopup="dialog">Personalizar</button>
+          <a class="btn" href="#/sobre">Como usar</a>
+        </div>
+      </header>
+      <main id="view" aria-live="polite" aria-busy="false">
+        <!-- Views renderizadas via roteador -->
+      </main>
+    </section>
+  </div>
 
-<main>
-  <section id="biografia">
-    <h2>Biografia</h2>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Saint_Augustine_Portrait.jpg/440px-Saint_Augustine_Portrait.jpg" alt="Retrato de Santo Agostinho" />
-    <p>Agostinho de Hipona (354–430) foi um filósofo, teólogo e bispo romano, considerado um dos maiores pensadores da Igreja Católica. Nasceu em Tagaste, no Norte da África (atual Argélia), e sua obra influenciou profundamente a filosofia ocidental e a teologia cristã.</p>
-    <p>Ele é conhecido por seus escritos sobre a graça, a cidade de Deus e a natureza do pecado.</p>
-  </section>
+  <button id="fabTop" class="fab" title="Voltar ao topo" aria-label="Voltar ao topo">↑</button>
 
-  <section id="obras">
-    <h2>Principais Obras</h2>
-    <ul>
-      <li><strong>Confissões</strong> (397-400): autobiografia espiritual e filosófica.</li>
-      <li><strong>A Cidade de Deus</strong> (426-427): defesa do cristianismo contra os pagãos e visão da história humana.</li>
-      <li><strong>De Trinitate</strong>: tratado sobre a Santíssima Trindade.</li>
-      <li><strong>Enchiridion</strong>: manual sobre a fé cristã.</li>
-    </ul>
-  </section>
+  <!-- Drawer de personalização -->
+  <aside id="drawer" class="drawer panel" role="dialog" aria-modal="false" aria-labelledby="customizerTitle">
+    <h3 id="customizerTitle">Personalização avançada</h3>
+    <p class="muted">Ajuste tema, tipografia, layout e exporte/importa preferências.</p>
+    <div class="list">
+      <div class="row"><span class="muted">Largura máxima</span>
+        <input type="range" id="maxWidth" min="800" max="1400" value="1100" />
+      </div>
+      <div class="row"><span class="muted">Cantos</span>
+        <input type="range" id="radius" min="6" max="30" value="18" />
+      </div>
+      <div class="row"><span class="muted">Exportar</span>
+        <button id="exportCfg" class="ghost">Baixar .json</button>
+      </div>
+      <div class="row"><span class="muted">Importar</span>
+        <input type="file" id="importCfg" accept="application/json" />
+      </div>
+    </div>
+  </aside>
 
-  <section id="citacoes">
-    <h2>Citações Famosas</h2>
-    <blockquote>"Ama e faz o que quiseres."</blockquote>
-    <blockquote>"A medida do amor é amar sem medida."</blockquote>
-    <blockquote>"O mundo é um livro e quem não viaja lê só uma página."</blockquote>
-    <blockquote>"O orgulho divide os homens; a humildade os une."</blockquote>
-  </section>
+  <script>
+    // =============================
+    // Núcleo: Estado, Utilidades
+    // =============================
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const state = {
+      theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'),
+      accent: localStorage.getItem('accent') || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+      fontSize: parseInt(localStorage.getItem('fontSize') || 16),
+      radius: parseInt(localStorage.getItem('radius') || 18),
+      maxw: parseInt(localStorage.getItem('maxw') || 1100),
+      search: ''
+    };
+    const persist = () => {
+      localStorage.setItem('theme', state.theme);
+      localStorage.setItem('accent', state.accent);
+      localStorage.setItem('fontSize', state.fontSize);
+      localStorage.setItem('radius', state.radius);
+      localStorage.setItem('maxw', state.maxw);
+    };
+    function applyState(){
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.documentElement.style.setProperty('--accent', state.accent);
+      document.documentElement.style.setProperty('--font-size', state.fontSize + 'px');
+      document.documentElement.style.setProperty('--radius', state.radius + 'px');
+      document.documentElement.style.setProperty('--maxw', state.maxw + 'px');
+      $('#fontSizeLabel').textContent = state.fontSize + 'px';
+    }
+    applyState();
 
-  <section id="linha-do-tempo">
-    <h2>Linha do Tempo</h2>
-    <ul>
-      <li><strong>354</strong> - Nasce em Tagaste, Norte da África.</li>
-      <li><strong>370</strong> - Vai estudar em Cartago.</li>
-      <li><strong>386</strong> - Conversão ao cristianismo.</li>
-      <li><strong>391</strong> - Ordenado sacerdote.</li>
-      <li><strong>395</strong> - Torna-se bispo de Hipona.</li>
-      <li><strong>430</strong> - Morre durante o cerco de Hipona pelos vândalos.</li>
-    </ul>
-  </section>
-</main>
+    // Debounce
+    const debounce = (fn, ms=250) => { let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms);} }
 
-<footer>
-  <p>© 2025 - Site sobre Santo Agostinho</p>
-</footer>
+    // =============================
+    // Conteúdo (poderia vir de API)
+    // =============================
+    const DATA = {
+      bio: {
+        title: 'Vida de Santo Agostinho (354–430)',
+        intro: `Aurelius Augustinus nasceu em Tagaste, no Norte da África romana. Após uma juventude marcada pela busca da verdade em diversas correntes filosófico-religiosas (como o maniqueísmo), converteu-se ao cristianismo em 387, sendo batizado por Santo Ambrósio. Ordenado presbítero e depois bispo de Hipona, escreveu obras que moldaram a filosofia e a teologia ocidentais.`
+      },
+      obras: [
+        {titulo:'Confissões', ano:398, tema:'autobiografia espiritual', desc:'Reflexão íntima sobre memória, tempo e graça. Marco da literatura introspectiva.'},
+        {titulo:'A Cidade de Deus', ano:426, tema:'filosofia da história', desc:'Resposta à queda de Roma, distingue Cidade de Deus e Cidade dos Homens.'},
+        {titulo:'De Trinitate', ano:419, tema:'teologia trinitária', desc:'Investiga o mistério da Trindade e analogias na mente humana.'},
+        {titulo:'De Doctrina Christiana', ano:397, tema:'hermenêutica', desc:'Sobre interpretação bíblica e a arte de ensinar.'},
+        {titulo:'Enchiridion', ano:421, tema:'catequese', desc:'Manual prático de fé, esperança e caridade.'}
+      ],
+      frases:[
+        '“Inquieto está o nosso coração enquanto não repousa em Ti.”',
+        '“Ama e faze o que quiseres.”',
+        '“Tarde te amei, ó Beleza tão antiga e tão nova.”',
+        '“O hábito, se não for detido, torna-se necessidade.”'
+      ],
+      teologia:[
+        {conceito:'Graça', resumo:'A salvação é dom imerecido de Deus; a graça cura a vontade ferida.'},
+        {conceito:'Livre-arbítrio', resumo:'A liberdade é real, mas está debilitada após a queda; coopera com a graça.'},
+        {conceito:'Tempo e memória', resumo:'O tempo é distensão da alma (passado=memória, presente=atenção, futuro=expectativa).'},
+        {conceito:'Igreja', resumo:'Corpo de Cristo, peregrina na história rumo à Cidade de Deus.'}
+      ],
+      timeline:[
+        {ano:354, evento:'Nascimento em Tagaste (atual Souk Ahras, Argélia).'},
+        {ano:371, evento:'Estudos em Cartago; adesão ao maniqueísmo.'},
+        {ano:384, evento:'Professor de retórica em Milão; contato com Ambrósio.'},
+        {ano:387, evento:'Conversão e batismo.'},
+        {ano:391, evento:'Ordenação sacerdotal em Hipona.'},
+        {ano:395, evento:'Bispo de Hipona.'},
+        {ano:398, evento:'Publica as Confissões.'},
+        {ano:410, evento:'Saque de Roma pelos visigodos (contexto de A Cidade de Deus).'},
+        {ano:426, evento:'Conclui A Cidade de Deus.'},
+        {ano:430, evento:'Morre durante o cerco dos vândalos a Hipona.'}
+      ],
+      bibliografia:[
+        {ref:'Santo Agostinho. Confissões. Diversas edições.'},
+        {ref:'Santo Agostinho. A Cidade de Deus. Diversas edições.'},
+        {ref:'O’Donnell, James. Augustine: A New Biography.'},
+        {ref:'Brown, Peter. Santo Agostinho: Uma Biografia.'}
+      ]
+    };
 
+    // Índice de busca simples
+    const SEARCH_INDEX = [];
+
+    // =============================
+    // Componentes
+    // =============================
+    const components = {
+      card:(title, body, extra='')=>`<article class="panel card" tabindex="0"><h3>${title}</h3><p class="muted">${body}</p>${extra}</article>`,
+      pill:(text)=>`<span class="tag">${text}</span>`
+    }
+
+    // =============================
+    // Rotas (Hash Router)
+    // =============================
+    const routes = {
+      '/': () => {
+        const pills = ['Vida', 'Obras', 'Frases', 'Teologia', 'Linha do Tempo', 'Quiz'].map(components.pill).join(' ');
+        return `
+        <section class="hero panel kv">
+          <div>
+            <h2>Bem-vindo(a) à Enciclopédia de Santo Agostinho</h2>
+            <p class="muted">Explore vida, obras e ideias do Doutor da Igreja por meio de uma aplicação de página única (SPA) com rotas, busca, tema dinâmico e recursos offline.</p>
+            <div class="toolbar">${pills}</div>
+          </div>
+          <div aria-hidden="true" class="panel card" style="text-align:center">
+            <svg width="180" height="120" viewBox="0 0 200 140">
+              <defs>
+                <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity=".4"/></linearGradient>
+              </defs>
+              <rect x="0" y="0" width="200" height="140" rx="16" fill="none" stroke="currentColor" opacity=".2"/>
+              <path d="M20 100 C 60 20, 140 20, 180 100" fill="none" stroke="url(#g)" stroke-width="4"/>
+              <text x="100" y="115" text-anchor="middle" font-size="14">Cor inquietum</text>
+            </svg>
+            <p class="muted">“Coração inquieto” — Confissões I,1</p>
+          </div>
+        </section>
+        <div class="grid cols-3" style="margin-top:18px">
+          ${components.card('Vida', DATA.bio.intro, '<a class="btn" href="#/vida">Ler mais</a>')}
+          ${components.card('Obras Principais', 'Confissões, A Cidade de Deus, De Trinitate, entre outras.', '<a class="btn" href="#/obras">Explorar</a>')}
+          ${components.card('Teologia', 'Graça, livre-arbítrio, tempo e memória, Igreja.', '<a class="btn" href="#/teologia">Conceitos</a>')}
+        </div>`
+      },
+      '/vida': () => `
+        <section class="panel card">
+          <h2>Vida</h2>
+          <p>${DATA.bio.intro}</p>
+        </section>
+        <section class="panel card">
+          <h3>Linha do Tempo resumida</h3>
+          <div class="timeline">
+            ${DATA.timeline.map(ev=>`<div class="event"><div class="dot"></div><div><strong>${ev.ano}</strong> — ${ev.evento}</div></div>`).join('')}
+          </div>
+        </section>
+      `,
+      '/obras': () => `
+        <section class="panel card">
+          <h2>Obras</h2>
+          <div class="grid cols-2">
+            ${DATA.obras.map(o=>components.card(`${o.titulo} <span class='tag'>${o.ano}</span>`, `${o.desc} <br><em>Tema:</em> ${o.tema}`)).join('')}
+          </div>
+        </section>
+      `,
+      '/frases': () => `
+        <section class="panel card">
+          <h2>Frases célebres</h2>
+          <ul>
+            ${DATA.frases.map(f=>`<li style="margin:10px 0">“${f.replace(/[“”]/g,'')}”</li>`).join('')}
+          </ul>
+        </section>
+      `,
+      '/teologia': () => `
+        <section class="panel card">
+          <h2>Conceitos teológicos e filosóficos</h2>
+          <div class="grid cols-2">
+            ${DATA.teologia.map(t=>components.card(t.conceito, t.resumo)).join('')}
+          </div>
+        </section>
+      `,
+      '/linha-do-tempo': () => `
+        <section class="panel card">
+          <h2>Linha do Tempo</h2>
+          <div class="timeline">
+            ${DATA.timeline.map(ev=>`<div class="event"><div class="dot"></div><div><strong>${ev.ano}</strong> — ${ev.evento}</div></div>`).join('')}
+          </div>
+        </section>
+      `,
+      '/quiz': () => `
+        <section class="panel card">
+          <h2>Quiz</h2>
+          <div id="quiz"></div>
+          <button id="submitQuiz" class="btn">Enviar</button>
+          <span id="quizScore" class="tag" style="margin-left:10px"></span>
+        </section>
+      `,
+      '/bibliografia': () => `
+        <section class="panel card">
+          <h2>Bibliografia Sugerida</h2>
+          <ul>${DATA.bibliografia.map(b=>`<li>${b.ref}</li>`).join('')}</ul>
+        </section>
+      `,
+      '/sobre': () => `
+        <section class="panel card">
+          <h2>Sobre este site</h2>
+          <p>Este projeto demonstra técnicas avançadas em uma única página HTML: roteamento por hash, tema dinâmico, painel de personalização, persistência em <code>localStorage</code>, busca com <em>debounce</em>, carregamento dinâmico de módulo (para o quiz), <abbr title="Progressive Web App">PWA</abbr> com Service Worker e acessibilidade.</p>
+          <div class="list">
+            <div class="row"><span class="muted">Atalhos</span> <span class="kbd-tip"><kbd class="kbd">/</kbd> buscar • <kbd class="kbd">Alt</kbd>+<kbd class="kbd">K</kbd> abrir personalização</span></div>
+            <div class="row"><span class="muted">Rotas</span> <span>#/, #/vida, #/obras, #/frases, #/teologia, #/linha-do-tempo, #/quiz, #/bibliografia</span></div>
+          </div>
+        </section>
+      `
+    };
+
+    // Roteador
+    function render(){
+      const hash = location.hash.replace('#','') || '/';
+      $('#routeTag').textContent = hash;
+      $$('#app [data-route]').forEach(a=> a.classList.toggle('active', a.getAttribute('href') === '#' + hash));
+      const view = routes[hash] ? routes[hash]() : `<section class='panel card'><h2>404</h2><p>Página não encontrada.</p></section>`;
+      const container = $('#view');
+      container.setAttribute('aria-busy','true');
+      container.innerHTML = view;
+      container.setAttribute('aria-busy','false');
+      // pós-render
+      if(hash === '/quiz') initQuiz();
+      indexSearch();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    window.addEventListener('hashchange', render);
+
+    // =============================
+    // Busca
+    // =============================
+    function indexSearch(){
+      SEARCH_INDEX.length = 0;
+      $$('#view h2, #view h3, #view p, #view li').forEach(el=>{
+        SEARCH_INDEX.push({text: el.textContent.toLowerCase(), el});
+      });
+    }
+    const doSearch = debounce((term)=>{
+      term = term.trim().toLowerCase();
+      if(!term){ $$('#view .match').forEach(el=>el.classList.remove('match')); return; }
+      let first;
+      SEARCH_INDEX.forEach(({text, el})=>{
+        const m = text.includes(term);
+        el.classList.toggle('match', m);
+        if(m && !first) first = el;
+      });
+      if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 200);
+
+    // =============================
+    // Quiz dinâmico (módulo via Blob)
+    // =============================
+    async function initQuiz(){
+      const code = `export const perguntas = [
+        {q:'Em que ano Agostinho foi batizado?', a:['354','387','410','430'], c:1},
+        {q:'Qual obra responde à queda de Roma?', a:['Confissões','De Trinitate','A Cidade de Deus','Enchiridion'], c:2},
+        {q:'Para Agostinho, o tempo é...', a:['Absoluto e externo','Distensão da alma','Apenas físico','Idêntico à eternidade'], c:1}
+      ];`;
+      const blob = new Blob([code], {type:'text/javascript'});
+      const url = URL.createObjectURL(blob);
+      const mod = await import(url);
+      const wrap = $('#quiz');
+      wrap.innerHTML = mod.perguntas.map((p,i)=>`
+        <div class="quiz-q"><strong>${i+1}. ${p.q}</strong>
+          ${p.a.map((opt,j)=>`<div><label><input type="radio" name="q${i}" value="${j}"> ${opt}</label></div>`).join('')}
+        </div>`).join('');
+      $('#submitQuiz').onclick = ()=>{
+        let score=0; mod.perguntas.forEach((p,i)=>{
+          const v = (new FormData(wrap.closest('section'))).get('q'+i);
+          if(Number(v)===p.c) score++;
+        });
+        $('#quizScore').textContent = `Pontuação: ${score}/${mod.perguntas.length}`;
+      };
+    }
+
+    // =============================
+    // UI: Personalização, Ações
+    // =============================
+    $('#toggleTheme').onclick = () => { state.theme = state.theme==='light'?'dark':'light'; persist(); applyState(); };
+    $('#accentPicker').addEventListener('input', (e)=>{ state.accent = e.target.value; persist(); applyState(); });
+    $('#fontPlus').onclick = ()=>{ state.fontSize = Math.min(22, state.fontSize+1); persist(); applyState(); };
+    $('#fontMinus').onclick = ()=>{ state.fontSize = Math.max(12, state.fontSize-1); persist(); applyState(); };
+
+    $('#maxWidth').addEventListener('input', e=>{ state.maxw = Number(e.target.value); persist(); applyState(); });
+    $('#radius').addEventListener('input', e=>{ state.radius = Number(e.target.value); persist(); applyState(); });
+
+    $('#openCustomizer').onclick = ()=> $('#drawer').classList.toggle('open');
+    $('#fabTop').onclick = ()=> window.scrollTo({top:0, behavior:'smooth'});
+
+    // Exportar/Importar config
+    $('#exportCfg').onclick = ()=>{
+      const cfg = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+      const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(cfg), download:'agostinho-config.json'});
+      a.click();
+    };
+    $('#importCfg').addEventListener('change', async (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const obj = JSON.parse(await file.text());
+      Object.assign(state, obj); persist(); applyState(); render();
+    });
+
+    // Busca + atalhos
+    $('#search').addEventListener('input', e=> doSearch(e.target.value));
+    window.addEventListener('keydown', e=>{
+      if(e.key==='/' && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('#search').focus(); }
+      if(e.altKey && (e.key==='k' || e.key==='K')){ e.preventDefault(); $('#drawer').classList.toggle('open'); }
+    });
+
+    // Interseção para animações leves
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{ if(en.isIntersecting){ en.target.style.transform='translateY(0)'; en.target.style.opacity='1'; } });
+    }, {threshold:.2});
+    const observe = () => $$('#view .panel').forEach(el=>{ el.style.transform='translateY(8px)'; el.style.opacity='.0'; el.style.transition='all .4s ease'; io.observe(el); });
+    const afterRenderObserve = new MutationObserver(observe);
+    afterRenderObserve.observe($('#view'), {childList:true, subtree:true});
+
+    // Primeira renderização
+    render();
+
+    // =============================
+    // SEO básico e Schema.org
+    // =============================
+    const ld = {
+      '@context':'https://schema.org', '@type':'Person',
+      name:'Aurelius Augustinus', alternateName:'Santo Agostinho',
+      birthDate:'0354-11-13', deathDate:'0430-08-28',
+      nationality:'Romano (Norte da África)',
+      sameAs:['https://pt.wikipedia.org/wiki/Agostinho_de_Hipona']
+    };
+    const script = document.createElement('script');
+    script.type='application/ld+json'; script.textContent=JSON.stringify(ld); document.head.appendChild(script);
+
+    // =============================
+    // PWA: Service Worker via Blob
+    // =============================
+    if('serviceWorker' in navigator){
+      const swCode = `
+        const CACHE='agostinho-v1';
+        self.addEventListener('install', e=>{
+          e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])));
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', e=> self.clients.claim());
+        self.addEventListener('fetch', e=>{
+          e.respondWith(
+            caches.match(e.request).then(r=> r || fetch(e.request).then(res=>{
+              const copy = res.clone(); caches.open(CACHE).then(c=>c.put(e.request, copy)); return res;
+            }).catch(()=> caches.match('./')))
+          );
+        });`;
+      const swBlob = new Blob([swCode], {type:'text/javascript'});
+      const swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl);
+    }
+  </script>
 </body>
 </html>
