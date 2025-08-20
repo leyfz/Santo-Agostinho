@@ -1,779 +1,511 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Agostinho • Biblioteca Interativa</title>
-<meta name="theme-color" content="#7c3aed"/>
-<meta name="description" content="SPA avançada com i18n, busca, TTS, comentários offline, notas Markdown, apresentação e PWA sobre Santo Agostinho."/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%220.9em%22 font-size=%2290%22>📚</text></svg>">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Santo Agostinho • Biblioteca Minimal</title>
+<meta name="theme-color" content="#0f172a" />
+<meta name="description" content="SPA minimalista com rotas, busca, i18n, notas Markdown, comentários offline e quiz sobre Santo Agostinho." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%220.9em%22 font-size=%2290%22>📘</text></svg>">
 <style>
-:root{
-  --bg:#0a0a12; --panel:#111322; --panel-2:#0f1020; --text:#eef2ff; --muted:#9aa3c7;
-  --accent:#7c3aed; --accent-2:#22d3ee; --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
-  --radius:16px; --shadow:0 12px 40px rgba(0,0,0,.35); --maxw:1120px; --fs:16px
-}
-[data-theme="light"]{
-  --bg:#f7fafc; --panel:#ffffff; --panel-2:#f2f5ff; --text:#0f172a; --muted:#475569;
-  --accent:#2563eb; --accent-2:#22d3ee; --shadow:0 12px 36px rgba(2,8,23,.12)
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font: 400 var(--fs)/1.6 "Inter",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
-  color:var(--text);
-  background:
-    radial-gradient(900px 480px at 8% -10%, rgba(124,58,237,.10), transparent 60%),
-    radial-gradient(900px 520px at 92% -10%, rgba(34,211,238,.08), transparent 60%),
-    var(--bg);
-}
-a{color:inherit;text-decoration:none}
-kbd{font:600 .85rem/1 ui-monospace,Menlo,Consolas,monospace; padding:.1em .4em; border-radius:8px; background:rgba(255,255,255,.08)}
-.container{display:grid; grid-template-columns: 280px 1fr; min-height:100vh}
-nav{
-  position:sticky; top:0; align-self:start; height:100vh; overflow:auto; padding:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--panel);
-  border-right:1px solid rgba(255,255,255,.07)
-}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
-  background:conic-gradient(from 200deg,var(--accent),var(--accent-2));
-  box-shadow:var(--shadow); font-size:22px}
-.brand h1{font-size:1.05rem;margin:0}
-.search{position:relative;margin:12px 0}
-.search input{
-  width:100%; padding:12px 14px 12px 40px; border-radius:12px; border:1px solid rgba(255,255,255,.09);
-  background:rgba(0,0,0,.18); color:var(--text)
-}
-.search svg{position:absolute;left:10px;top:10px;opacity:.7}
-.menu{display:grid;gap:6px;margin-top:8px}
-.menu a{padding:10px 12px;border-radius:12px;opacity:.85}
-.menu a.active,.menu a:hover{background:rgba(255,255,255,.08);opacity:1}
-.panel{background:var(--panel); border:1px solid rgba(255,255,255,.07); border-radius:var(--radius); box-shadow:var(--shadow)}
-header.top{
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  position:sticky; top:0; z-index:2; padding:12px 16px; backdrop-filter:blur(8px);
-  background:linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.06))
-}
-main{padding:22px; max-width:var(--maxw); margin:0 auto}
-.grid{display:grid; gap:16px}
-.cols-3{grid-template-columns:repeat(3,1fr)}
-.cols-2{grid-template-columns:repeat(2,1fr)}
-.card{padding:18px}
-.tag{font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14)}
-.muted{color:var(--muted)}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.btn,button{
-  cursor:pointer;border:0;padding:10px 14px;border-radius:12px;color:white;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow)
-}
-.ghost{background:transparent;color:var(--text); border:1px solid rgba(255,255,255,.16)}
-.icon-btn{display:grid;place-items:center;padding:10px;width:40px;aspect-ratio:1/1}
-.hero{padding:26px;background:radial-gradient(560px 280px at 10% 0%, rgba(124,58,237,.10), transparent 60%), var(--panel)}
-.hero h2{margin:0 0 6px}
-.kv{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:center}
-.list{display:grid;gap:10px}
-.row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
-.timeline{position:relative;margin:8px 0}
-.timeline::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(var(--accent),transparent)}
-.event{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:8px 0}
-.event .dot{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));margin-left:2px;box-shadow:0 0 0 4px rgba(124,58,237,.15)}
-mark{padding:.05em .25em;border-radius:6px;background:rgba(124,58,237,.35)}
-pre,code{font-family:ui-monospace,Menlo,Consolas,monospace}
-textarea,input,select{font:inherit;color:inherit}
-textarea{width:100%;min-height:140px;border-radius:12px;padding:12px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.12)}
-.comment{padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:var(--panel-2)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.fab{position:fixed;right:16px;bottom:16px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;z-index:10}
-.drawer{position:fixed;right:12px;top:12px;width:min(380px,92vw);max-height:90vh;overflow:auto;padding:18px;display:none}
-.drawer.open{display:block}
-.skip{position:absolute;left:-2000px}.skip:focus{left:10px;top:10px;z-index:10}
-.immersive nav,.immersive header.top{display:none}
-.slide-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);color:#fff;display:none;z-index:50}
-.slide-overlay.active{display:flex;align-items:center;justify-content:center}
-.slide{max-width:80vw;max-height:80vh;padding:24px;border-radius:16px;background:#111;box-shadow:0 16px 60px rgba(0,0,0,.6)}
-.slide h2{margin-top:0}
-@media (max-width:1000px){ .container{grid-template-columns:1fr} nav{position:static;height:auto} .kv{grid-template-columns:1fr}}
-@media print{
-  nav,.fab,.drawer,header.top{display:none!important}
-  main{max-width:unset}
-  .panel{box-shadow:none;border:0}
-}
+  :root{
+    --bg:#ffffff; --text:#0f172a; --muted:#475569; --border:#e2e8f0; --accent:#2563eb;
+    --panel:#ffffff; --panel-2:#f8fafc; --radius:12px; --maxw:960px; --fs:16px
+  }
+  [data-theme="dark"]{
+    --bg:#0b1020; --text:#e6ecff; --muted:#9aa3c7; --border:#1f2a44; --accent:#60a5fa;
+    --panel:#121a33; --panel-2:#0e152b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font:400 var(--fs)/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial;
+    background:var(--bg); color:var(--text);
+  }
+  a{color:inherit; text-decoration:none}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+  /* Header */
+  header.site{
+    position:sticky; top:0; z-index:5; background:var(--panel);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar{display:flex; align-items:center; gap:12px; justify-content:space-between; padding:12px 0}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand .logo{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;border:1px solid var(--border);font-size:20px}
+  .brand h1{font-size:1rem; margin:0}
+  nav.menu{display:flex; gap:8px; flex-wrap:wrap}
+  nav.menu a{padding:6px 10px; border-radius:8px}
+  nav.menu a.active, nav.menu a:hover{background:var(--panel-2)}
+  .tools{display:flex; gap:8px; align-items:center}
+  .ghost, .btn, button{
+    cursor:pointer; border:1px solid var(--border); background:var(--panel); color:inherit;
+    border-radius:10px; padding:8px 10px; font:inherit;
+  }
+  .btn{background:var(--accent); color:#fff; border-color:transparent}
+  .field{display:flex; align-items:center; gap:8px}
+  .search{display:flex; align-items:center; gap:8px; border:1px solid var(--border); padding:6px 10px; border-radius:10px; background:var(--panel-2)}
+  .search input{border:0; outline:none; background:transparent; width:180px; color:inherit}
+  /* Content */
+  main{padding:20px 0}
+  .panel{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px}
+  .muted{color:var(--muted)}
+  .grid{display:grid; gap:14px}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .card{padding:14px}
+  .tag{font-size:.75rem; padding:2px 8px; border:1px solid var(--border); border-radius:999px}
+  .timeline{border-left:2px solid var(--border); padding-left:14px}
+  .timeline .row{padding:8px 0}
+  ul.clean{margin:0; padding-left:18px}
+  mark{background:rgba(37,99,235,.18); border-radius:4px; padding:.05em .2em}
+  textarea, input, select{font:inherit; color:inherit}
+  textarea{width:100%; min-height:140px; border-radius:10px; border:1px solid var(--border); padding:10px; background:var(--panel-2)}
+  .comment{border:1px solid var(--border); border-radius:10px; padding:12px; background:var(--panel-2)}
+  footer.site{padding:24px 0; color:var(--muted); border-top:1px solid var(--border); margin-top:40px}
+  @media (max-width:900px){ .cols-3{grid-template-columns:1fr} .cols-2{grid-template-columns:1fr} .search input{width:120px} }
+  @media print{ header.site, .tools, nav.menu, .search, footer.site{display:none!important} main{padding:0} .panel{border:0} }
 </style>
 </head>
-<body>
-<a href="#conteudo" class="skip"><kbd>↘</kbd> Pular para o conteúdo</a>
-
-<div class="container" id="app">
-  <nav aria-label="Navegação principal">
+<body data-theme="light">
+<header class="site">
+  <div class="wrap topbar">
     <div class="brand">
-      <div class="logo" aria-hidden="true">📚</div>
-      <h1 id="siteTitle">Agostinho</h1>
+      <div class="logo" aria-hidden="true">📘</div>
+      <h1 id="siteTitle">Santo Agostinho</h1>
     </div>
-
-    <div class="search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="search" aria-label="Buscar" placeholder="Buscar termos, obras..." />
-    </div>
-
-    <div class="menu" role="menu" id="menu">
-      <a href="#/" data-route role="menuitem" data-i18n="menu.home">Início</a>
-      <a href="#/vida" data-route role="menuitem" data-i18n="menu.life">Vida</a>
-      <a href="#/obras" data-route role="menuitem" data-i18n="menu.works">Obras</a>
-      <a href="#/conceitos" data-route role="menuitem" data-i18n="menu.concepts">Conceitos</a>
-      <a href="#/frases" data-route role="menuitem" data-i18n="menu.quotes">Frases</a>
-      <a href="#/linha" data-route role="menuitem" data-i18n="menu.timeline">Linha do Tempo</a>
-      <a href="#/quiz" data-route role="menuitem">Quiz</a>
-      <a href="#/notas" data-route role="menuitem" data-i18n="menu.notes">Notas</a>
-      <a href="#/comentarios" data-route role="menuitem" data-i18n="menu.comments">Comentários</a>
-      <a href="#/perfil" data-route role="menuitem" data-i18n="menu.profile">Perfil</a>
-      <a href="#/sobre" data-route role="menuitem" data-i18n="menu.about">Sobre</a>
-    </div>
-
-    <div style="height:8px"></div>
-
-    <div class="panel card">
-      <div class="list">
-        <div class="row">
-          <span class="muted" data-i18n="ui.theme">Tema</span>
-          <div class="toolbar">
-            <button class="ghost" id="toggleTheme" aria-pressed="false" data-i18n="ui.toggleTheme">Alternar</button>
-            <label class="badge">Acento <input type="color" id="accentPicker" value="#7c3aed" aria-label="Cor de acento"/></label>
-          </div>
-        </div>
-        <div class="row">
-          <span class="muted" data-i18n="ui.type">Tipografia</span>
-          <div class="toolbar">
-            <button class="ghost" id="fontMinus" aria-label="Diminuir">A-</button>
-            <span class="tag" id="fontSizeLabel">16px</span>
-            <button class="ghost" id="fontPlus" aria-label="Aumentar">A+</button>
-          </div>
-        </div>
-        <div class="row">
-          <span class="muted">i18n</span>
-          <div class="toolbar">
-            <select id="langSel" class="ghost" aria-label="Idioma">
-              <option value="pt">Português</option>
-              <option value="en">English</option>
-            </select>
-            <span class="badge"><kbd>Alt</kbd>+<kbd>I</kbd></span>
-          </div>
-        </div>
-        <div class="row">
-          <span class="muted" data-i18n="ui.shortcuts">Atalhos</span>
-          <div class="chips">
-            <span class="badge"><kbd>/</kbd> buscar</span>
-            <span class="badge"><kbd>Alt</kbd>+<kbd>K</kbd> painel</span>
-            <span class="badge"><kbd>Alt</kbd>+<kbd>R</kbd> ler (TTS)</span>
-            <span class="badge"><kbd>Alt</kbd>+<kbd>P</kbd> slides</span>
-            <span class="badge"><kbd>Alt</kbd>+<kbd>M</kbd> modo leitura</span>
-          </div>
-        </div>
+    <nav class="menu" id="menu">
+      <a href="#/" data-route data-i18n="menu.home" class="active">Início</a>
+      <a href="#/vida" data-route data-i18n="menu.life">Vida</a>
+      <a href="#/obras" data-route data-i18n="menu.works">Obras</a>
+      <a href="#/conceitos" data-route data-i18n="menu.concepts">Conceitos</a>
+      <a href="#/frases" data-route data-i18n="menu.quotes">Frases</a>
+      <a href="#/linha" data-route data-i18n="menu.timeline">Linha</a>
+      <a href="#/quiz" data-route>Quiz</a>
+      <a href="#/notas" data-route data-i18n="menu.notes">Notas</a>
+      <a href="#/comentarios" data-route data-i18n="menu.comments">Comentários</a>
+      <a href="#/sobre" data-route data-i18n="menu.about">Sobre</a>
+    </nav>
+    <div class="tools">
+      <div class="search" title="Pesquisar ( / )">
+        <span aria-hidden="true">🔎</span>
+        <input id="search" placeholder="Buscar…" aria-label="Buscar" />
       </div>
+      <select id="langSel" class="ghost" aria-label="Idioma">
+        <option value="pt">PT</option>
+        <option value="en">EN</option>
+      </select>
+      <button id="themeBtn" class="ghost" aria-label="Tema">🌗</button>
     </div>
-
-    <footer class="muted" style="padding:12px;text-align:center">SPA • PWA • Offline ✓</footer>
-  </nav>
-
-  <section id="conteudo">
-    <header class="top panel" id="topbar">
-      <div class="toolbar">
-        <span class="tag" id="routeTag">/</span>
-        <span class="muted" id="subtitle">Biblioteca interativa sobre Santo Agostinho</span>
-      </div>
-      <div class="toolbar">
-        <button id="ttsBtn" class="ghost icon-btn" title="Ler em voz alta" aria-label="TTS">🔊</button>
-        <button id="immersiveBtn" class="ghost" data-i18n="ui.immersive">Modo leitura</button>
-        <button id="presentBtn" class="ghost" title="Apresentação">Apresentação</button>
-        <button id="openCustomizer" class="ghost" aria-haspopup="dialog" data-i18n="ui.customize">Personalizar</button>
-        <a class="btn" href="#/sobre" data-i18n="ui.howTo">Como usar</a>
-      </div>
-    </header>
-    <main id="view" aria-live="polite" aria-busy="false"></main>
-  </section>
-</div>
-
-<button id="fabTop" class="fab" title="Topo" aria-label="Topo">↑</button>
-
-<!-- Drawer -->
-<aside id="drawer" class="drawer panel" role="dialog" aria-modal="false" aria-labelledby="customizerTitle">
-  <h3 id="customizerTitle">Personalização</h3>
-  <p class="muted">Tema, tipografia, layout e exportação de preferências.</p>
-  <div class="list">
-    <div class="row"><span class="muted">Largura máx.</span><input type="range" id="maxWidth" min="800" max="1400" value="1120"/></div>
-    <div class="row"><span class="muted">Raio</span><input type="range" id="radius" min="6" max="30" value="16"/></div>
-    <div class="row"><span class="muted">Exportar</span><button id="exportCfg" class="ghost">Baixar .json</button></div>
-    <div class="row"><span class="muted">Importar</span><input type="file" id="importCfg" accept="application/json"/></div>
   </div>
-</aside>
+</header>
 
-<!-- Slides overlay -->
-<div id="slides" class="slide-overlay" aria-hidden="true">
-  <div class="slide" id="slideContent"></div>
-</div>
+<main class="wrap" id="main" aria-live="polite" aria-busy="false"></main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="muted">Biblioteca minimal — SPA + PWA — Offline pronto ✓</p>
+  </div>
+</footer>
 
 <script>
-/* ==========================================================
-   Núcleo: Estado, i18n, Utilidades
-========================================================== */
-const $ = sel=>document.querySelector(sel);
-const $$ = sel=>Array.from(document.querySelectorAll(sel));
+/* =============================
+   Estado, i18n, utilitários
+============================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 const state = {
-  theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'),
-  accent: localStorage.getItem('accent') || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
-  fontSize: parseInt(localStorage.getItem('fontSize') || 16),
-  radius: parseInt(localStorage.getItem('radius') || 16),
-  maxw: parseInt(localStorage.getItem('maxw') || 1120),
-  lang: localStorage.getItem('lang') || 'pt',
-  search: '',
-  visited: JSON.parse(localStorage.getItem('visited') || '[]'), // rotas visitadas
-  badges: JSON.parse(localStorage.getItem('badges') || '[]')
+  theme: localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'),
+  lang: localStorage.getItem('lang') || 'pt'
 };
-function persist(){
-  for (const k of ['theme','accent','fontSize','radius','maxw','lang','visited','badges'])
-    localStorage.setItem(k, typeof state[k]==='string'? state[k] : JSON.stringify(state[k]));
-}
-function applyState(){
-  document.documentElement.setAttribute('data-theme', state.theme);
-  document.documentElement.style.setProperty('--accent', state.accent);
-  document.documentElement.style.setProperty('--fs', state.fontSize+'px');
-  document.documentElement.style.setProperty('--radius', state.radius+'px');
-  document.documentElement.style.setProperty('--maxw', state.maxw+'px');
-  $('#fontSizeLabel').textContent = state.fontSize+'px';
-  $('#langSel').value = state.lang;
-}
-applyState();
+document.body.setAttribute('data-theme', state.theme);
+$('#langSel').value = state.lang;
+function save(k,v){ localStorage.setItem(k, v); }
 
-const i18n = {
+/* i18n mínimo */
+const I18N = {
   pt:{
-    brand:'Agostinho',
-    subtitle:'Biblioteca interativa sobre Santo Agostinho',
-    menu:{home:'Início',life:'Vida',works:'Obras',concepts:'Conceitos',quotes:'Frases',timeline:'Linha do Tempo',notes:'Notas',comments:'Comentários',profile:'Perfil',about:'Sobre'},
-    ui:{theme:'Tema',toggleTheme:'Alternar',type:'Tipografia',shortcuts:'Atalhos',immersive:'Modo leitura',customize:'Personalizar',howTo:'Como usar'},
-    home:{
-      title:'Bem-vindo(a) à Biblioteca de Santo Agostinho',
-      lead:'Explore vida, obras e ideias do Doutor da Igreja em uma aplicação moderna com recursos offline.'
-    },
-    comments:{title:'Comentários',empty:'Seja o primeiro a comentar nesta seção.',hint:'Os comentários são salvos no seu navegador (offline).'},
-    notes:{title:'Notas pessoais (Markdown)',btnSave:'Salvar nota',btnExport:'Exportar PDF',placeholder:'# Minhas notas\n\n- Escreva em **Markdown**.\n- Use para registrar insights, citações etc.'},
-    profile:{title:'Perfil & Medalhas',badges:'Medalhas conquistadas',empty:'Nenhuma medalha ainda. Explore as páginas!'}
+    brand:'Santo Agostinho',
+    homeTitle:'Bem-vindo(a)',
+    homeLead:'Uma biblioteca minimal com as ideias de Santo Agostinho.',
+    menu:{home:'Início',life:'Vida',works:'Obras',concepts:'Conceitos',quotes:'Frases',timeline:'Linha',notes:'Notas',comments:'Comentários',about:'Sobre'},
+    notes:{title:'Notas (Markdown)',save:'Salvar',print:'Imprimir'},
+    comments:{title:'Comentários',empty:'Ainda sem comentários nesta página.',placeholder:'Escreva seu comentário…',publish:'Publicar'},
+    about:{title:'Sobre',desc:'SPA minimalista com rotas, busca com realce, i18n, notas em Markdown (com impressão), comentários offline, quiz e PWA.'}
   },
   en:{
-    brand:'Augustine',
-    subtitle:'Interactive library on Saint Augustine',
-    menu:{home:'Home',life:'Life',works:'Works',concepts:'Concepts',quotes:'Quotes',timeline:'Timeline',notes:'Notes',comments:'Comments',profile:'Profile',about:'About'},
-    ui:{theme:'Theme',toggleTheme:'Toggle',type:'Typography',shortcuts:'Shortcuts',immersive:'Reading mode',customize:'Customize',howTo:'How to'},
-    home:{title:'Welcome to the Augustine Library', lead:'Explore life, works, and ideas in a modern offline-capable SPA.'},
-    comments:{title:'Comments',empty:'Be the first to comment on this section.',hint:'Comments are stored locally (offline).'},
-    notes:{title:'Personal Notes (Markdown)',btnSave:'Save note',btnExport:'Export PDF',placeholder:'# My notes\n\n- Write in **Markdown**.\n- Use it to store insights, quotes, etc.'},
-    profile:{title:'Profile & Badges',badges:'Earned badges',empty:'No badges yet. Explore pages!'}
+    brand:'Saint Augustine',
+    homeTitle:'Welcome',
+    homeLead:'A minimal library for the ideas of Saint Augustine.',
+    menu:{home:'Home',life:'Life',works:'Works',concepts:'Concepts',quotes:'Quotes',timeline:'Timeline',notes:'Notes',comments:'Comments',about:'About'},
+    notes:{title:'Notes (Markdown)',save:'Save',print:'Print'},
+    comments:{title:'Comments',empty:'No comments yet on this page.',placeholder:'Write your comment…',publish:'Publish'},
+    about:{title:'About',desc:'Minimal SPA with routes, highlighted search, i18n, Markdown notes (printable), offline comments, quiz and PWA.'}
   }
 };
 function t(path){
-  const p = path.split('.');
-  let o = i18n[state.lang];
-  for(const k of p){ if(!o) break; o=o[k]; }
+  const parts = path.split('.'); let o = I18N[state.lang];
+  for(const p of parts){ if(!o) break; o = o[p]; }
   return o || path;
 }
 function applyI18n(){
-  // static
-  $$('#menu [data-i18n]').forEach(n=> n.textContent = t(n.dataset.i18n));
-  $$('[data-i18n]').forEach(n=>{ if(n.closest('#menu')) return; if(n.id==='subtitle') return; n.textContent=t(n.dataset.i18n); });
   $('#siteTitle').textContent = t('brand');
-  $('#subtitle').textContent = t('subtitle');
+  $$('#menu [data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
 }
 
-/* ==========================================================
-   Conteúdo base
-========================================================== */
+/* =============================
+   Conteúdo
+============================= */
 const DATA = {
   bio:{
-    title:'Vida de Santo Agostinho (354–430)',
-    intro:`Aurelius Augustinus nasceu em Tagaste, Norte da África romana. Após buscar a verdade no maniqueísmo e em correntes filosóficas, converteu-se ao cristianismo em 387 (batizado por Ambrósio). Foi bispo de Hipona e autor de obras que moldaram a filosofia e a teologia ocidentais.`
+    intro:`Aurelius Augustinus (354–430) nasceu em Tagaste. Após buscas filosófico-religiosas (incl. maniqueísmo), converteu-se em 387 (batismo de Ambrósio), tornou-se bispo de Hipona e escreveu obras que moldaram a teologia ocidental.`
   },
   works:[
-    {title:'Confissões', year:398, theme:'autobiografia espiritual', desc:'Reflexão sobre memória, tempo e graça.'},
-    {title:'A Cidade de Deus', year:426, theme:'filosofia da história', desc:'Resposta à queda de Roma; duas cidades: Deus e dos homens.'},
-    {title:'De Trinitate', year:419, theme:'teologia trinitária', desc:'Analogia trinitária na mente humana.'},
-    {title:'De Doctrina Christiana', year:397, theme:'hermenêutica', desc:'Interpretação bíblica e arte de ensinar.'},
-    {title:'Enchiridion', year:421, theme:'catequese', desc:'Fé, esperança e caridade em síntese prática.'}
+    {title:'Confissões', year:398, theme:'autobiografia', desc:'Memória, tempo e graça.'},
+    {title:'A Cidade de Deus', year:426, theme:'história', desc:'Duas cidades: Deus e dos homens.'},
+    {title:'De Trinitate', year:419, theme:'trindade', desc:'Analogia trinitária na mente.'},
+    {title:'De Doctrina Christiana', year:397, theme:'hermenêutica', desc:'Interpretação e ensino.'},
+    {title:'Enchiridion', year:421, theme:'catequese', desc:'Fé, esperança e caridade.'}
   ],
   concepts:[
-    {k:'Graça', v:'Dom imerecido de Deus que cura e eleva a vontade.'},
-    {k:'Livre-arbítrio', v:'Liberdade real, ferida pela queda; coopera com a graça.'},
-    {k:'Tempo e memória', v:'Tempo como distensão da alma: memória, atenção, expectativa.'},
+    {k:'Graça', v:'Dom imerecido que cura a vontade.'},
+    {k:'Livre-arbítrio', v:'Liberdade real, ferida; coopera com a graça.'},
+    {k:'Tempo e memória', v:'Distensão da alma (memória, atenção, expectativa).'},
     {k:'Igreja', v:'Corpo de Cristo, peregrina rumo à Cidade de Deus.'}
   ],
   timeline:[
-    {y:354, e:'Nascimento em Tagaste (Souk Ahras).'},
-    {y:371, e:'Estudos em Cartago; adesão ao maniqueísmo.'},
-    {y:384, e:'Professor de retórica em Milão; contato com Ambrósio.'},
+    {y:354, e:'Nascimento em Tagaste.'},
+    {y:371, e:'Estudos em Cartago; maniqueísmo.'},
+    {y:384, e:'Retórica em Milão; contato com Ambrósio.'},
     {y:387, e:'Conversão e batismo.'},
-    {y:391, e:'Ordenação sacerdotal em Hipona.'},
+    {y:391, e:'Ordenação em Hipona.'},
     {y:395, e:'Bispo de Hipona.'},
     {y:398, e:'Publica Confissões.'},
-    {y:410, e:'Saque de Roma (contexto da Cidade de Deus).'},
     {y:426, e:'Conclui Cidade de Deus.'},
-    {y:430, e:'Morre no cerco dos vândalos a Hipona.'}
+    {y:430, e:'Falecimento em Hipona.'}
   ],
   quotes:[
-    'Inquieto está o nosso coração enquanto não repousa em Ti.',
-    'Ama e faze o que quiseres.',
-    'Tarde te amei, ó Beleza tão antiga e tão nova.',
-    'O hábito, se não for detido, torna-se necessidade.'
-  ],
-  biblio:[
-    'Santo Agostinho. Confissões.',
-    'Santo Agostinho. A Cidade de Deus.',
-    'O’Donnell, James. Augustine: A New Biography.',
-    'Brown, Peter. Santo Agostinho: Uma Biografia.'
+    '“Inquieto está o nosso coração enquanto não repousa em Ti.”',
+    '“Ama e faze o que quiseres.”',
+    '“Tarde te amei, ó Beleza tão antiga e tão nova.”'
   ]
 };
 
-/* ==========================================================
-   Componentes
-========================================================== */
-const comp = {
-  card:(title,body,extra='')=>`<article class="panel card" tabindex="0"><h3>${title}</h3><p class="muted">${body}</p>${extra}</article>`,
-  pill:(text)=>`<span class="tag">${text}</span>`,
-  chip:(text)=>`<span class="badge">${text}</span>`
-};
-
-/* ==========================================================
-   Busca avançada
-========================================================== */
-let SEARCH_INDEX=[];
-function indexSearch(){
-  SEARCH_INDEX.length=0;
-  $$('#view h1, #view h2, #view h3, #view p, #view li').forEach(el=>{
-    SEARCH_INDEX.push({text:el.textContent.toLowerCase(), el});
-  });
-}
-const debounce = (fn,ms=250)=>{ let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms)}}
-function clearMarks(){
-  $$('#view mark').forEach(m=>{
-    const t=document.createTextNode(m.textContent); m.replaceWith(t);
-  });
-}
-const doSearch = debounce((term)=>{
-  term=term.trim().toLowerCase();
-  clearMarks();
-  if(!term) return;
-  SEARCH_INDEX.forEach(({text,el})=>{
-    const i=text.indexOf(term);
-    if(i>=0){
-      // realce simples: substitui texto no nó (somente em nós sem HTML interno complexo)
-      if(el.childNodes.length===1 && el.childNodes[0].nodeType===3){
-        const raw=el.textContent;
-        const re=new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig');
-        el.innerHTML = raw.replace(re, m=>`<mark>${m}</mark>`);
-      }
-    }
-  });
-  const first=$('#view mark'); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
-},200);
-
-/* ==========================================================
-   Rotas
-========================================================== */
+/* =============================
+   Views (rotas)
+============================= */
 const routes = {
-  '/': ()=>`
-    <section class="hero panel kv">
-      <div>
-        <h2 id="homeTitle">${t('home.title')}</h2>
-        <p class="muted">${t('home.lead')}</p>
-        <div class="toolbar">${['Vida','Obras','Conceitos','Frases','Linha'].map(comp.pill).join(' ')}</div>
-      </div>
-      <div class="panel card" aria-hidden="true" style="text-align:center">
-        <svg width="200" height="130" viewBox="0 0 220 140">
-          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity=".35"/></linearGradient></defs>
-          <rect x="0" y="0" width="220" height="140" rx="16" fill="none" stroke="currentColor" opacity=".2"/>
-          <path d="M20 100 C 60 20, 160 20, 200 100" fill="none" stroke="url(#g)" stroke-width="4"/>
-          <text x="110" y="118" text-anchor="middle" font-size="13">Cor inquietum</text>
-        </svg>
-        <p class="muted">“Coração inquieto” — Conf. I,1</p>
-      </div>
+  '/': () => `
+    <section class="panel">
+      <h2>${t('homeTitle')}</h2>
+      <p class="muted">${t('homeLead')}</p>
     </section>
-    <div class="grid cols-3" style="margin-top:16px">
-      ${comp.card('Vida', DATA.bio.intro, '<a class="btn" href="#/vida">Ler mais</a>')}
-      ${comp.card('Obras', 'Confissões, Cidade de Deus, De Trinitate...', '<a class="btn" href="#/obras">Explorar</a>')}
-      ${comp.card('Conceitos', 'Graça, liberdade, tempo e memória...', '<a class="btn" href="#/conceitos">Conceitos</a>')}
+    <div class="grid cols-3" style="margin-top:14px">
+      <div class="panel card"><h3>Vida</h3><p class="muted">${DATA.bio.intro}</p><a class="btn" href="#/vida">Ler</a></div>
+      <div class="panel card"><h3>Obras</h3><p class="muted">Confissões, Cidade de Deus, De Trinitate, …</p><a class="btn" href="#/obras">Explorar</a></div>
+      <div class="panel card"><h3>Conceitos</h3><p class="muted">Graça, liberdade, tempo, Igreja…</p><a class="btn" href="#/conceitos">Ver</a></div>
     </div>
   `,
-  '/vida': ()=>`
-    <section class="panel card">
+  '/vida': () => `
+    <section class="panel">
       <h2>Vida</h2>
       <p>${DATA.bio.intro}</p>
-    </section>
-    <section class="panel card">
-      <h3>Linha do Tempo (resumo)</h3>
-      <div class="timeline">
-        ${DATA.timeline.map(ev=>`<div class="event"><div class="dot"></div><div><strong>${ev.y}</strong> — ${ev.e}</div></div>`).join('')}
+      <div class="timeline" style="margin-top:10px">
+        ${DATA.timeline.map(i=>`<div class="row"><strong>${i.y}</strong> — ${i.e}</div>`).join('')}
       </div>
     </section>
   `,
-  '/obras': ()=>`
-    <section class="panel card">
+  '/obras': () => `
+    <section class="panel">
       <h2>Obras</h2>
-      <div class="toolbar" style="margin-bottom:8px">
-        <label class="badge">Filtro: 
-          <select id="workFilter" class="ghost">
-            <option value="all">Todas</option>
-            <option value="<=400">Até 400</option>
-            <option value=">400">&gt; 400</option>
-          </select>
-        </label>
+      <div class="grid cols-2" id="worksGrid"></div>
+      <div class="field" style="margin-top:10px">
+        <label for="workFilter">Filtro:</label>
+        <select id="workFilter">
+          <option value="all">Todas</option>
+          <option value="<=400">Até 400</option>
+          <option value=">400">&gt; 400</option>
+        </select>
       </div>
-      <div id="worksWrap" class="grid cols-2"></div>
     </section>
   `,
-  '/conceitos': ()=>`
-    <section class="panel card">
+  '/conceitos': () => `
+    <section class="panel">
       <h2>Conceitos</h2>
       <div class="grid cols-2">
-        ${DATA.concepts.map(c=>comp.card(c.k, c.v)).join('')}
+        ${DATA.concepts.map(c=>`<div class="card"><h3>${c.k}</h3><p class="muted">${c.v}</p></div>`).join('')}
       </div>
     </section>
   `,
-  '/frases': ()=>`
-    <section class="panel card">
+  '/frases': () => `
+    <section class="panel">
       <h2>Frases</h2>
-      <ul>${DATA.quotes.map(q=>`<li style="margin:8px 0">“${q}”</li>`).join('')}</ul>
+      <ul class="clean">
+        ${DATA.quotes.map(q=>`<li>${q}</li>`).join('')}
+      </ul>
     </section>
   `,
-  '/linha': ()=>`
-    <section class="panel card">
+  '/linha': () => `
+    <section class="panel">
       <h2>Linha do Tempo</h2>
       <div class="timeline">
-        ${DATA.timeline.map(ev=>`<div class="event"><div class="dot"></div><div><strong>${ev.y}</strong> — ${ev.e}</div></div>`).join('')}
+        ${DATA.timeline.map(i=>`<div class="row"><strong>${i.y}</strong> — ${i.e}</div>`).join('')}
       </div>
     </section>
   `,
-  '/quiz': ()=>`
-    <section class="panel card">
+  '/quiz': () => `
+    <section class="panel">
       <h2>Quiz</h2>
-      <form id="quizForm"></form>
-      <div class="toolbar" style="margin-top:8px">
+      <form id="quizForm" style="margin-top:8px"></form>
+      <div class="field" style="margin-top:10px; gap:10px">
         <button id="submitQuiz" class="btn">Enviar</button>
         <span id="quizScore" class="tag"></span>
       </div>
     </section>
   `,
-  '/notas': ()=>`
-    <section class="panel card">
+  '/notas': () => `
+    <section class="panel">
       <h2>${t('notes.title')}</h2>
-      <div class="grid cols-2">
+      <div class="grid cols-2" style="margin-top:8px">
         <div>
-          <textarea id="mdInput" placeholder="${t('notes.placeholder').replace(/"/g,'&quot;')}"></textarea>
-          <div class="toolbar" style="margin-top:8px">
-            <button id="saveNote" class="btn">${t('notes.btnSave')}</button>
-            <button id="exportPDF" class="ghost">${t('notes.btnExport')}</button>
+          <textarea id="mdInput" placeholder="# Minhas notas\n\n- Use **Markdown**."></textarea>
+          <div class="field" style="margin-top:8px; gap:8px">
+            <button id="saveNote" class="btn">${t('notes.save')}</button>
+            <button id="printNote" class="ghost">${t('notes.print')}</button>
           </div>
         </div>
         <div>
           <h3>Preview</h3>
-          <div id="mdPreview" class="panel card" style="min-height:140px;background:var(--panel-2)"></div>
+          <div id="mdPreview" class="panel" style="min-height:140px; background:var(--panel-2)"></div>
         </div>
       </div>
     </section>
   `,
-  '/comentarios': ()=>`
-    <section class="panel card">
+  '/comentarios': () => `
+    <section class="panel">
       <h2>${t('comments.title')}</h2>
-      <p class="muted">${t('comments.hint')}</p>
-      <div id="commentsList" class="grid"></div>
-      <div class="panel card" style="margin-top:10px;background:var(--panel-2)">
-        <h3>Novo comentário</h3>
-        <textarea id="commentText" placeholder="Escreva seu comentário..."></textarea>
-        <div class="toolbar" style="margin-top:8px">
-          <input id="commentAuthor" class="ghost" placeholder="Seu nome" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:transparent"/>
-          <button id="sendComment" class="btn">Publicar</button>
+      <div id="commentsList" class="grid" style="margin-top:8px"></div>
+      <div class="panel" style="margin-top:10px; background:var(--panel-2)">
+        <textarea id="commentText" placeholder="${t('comments.placeholder')}"></textarea>
+        <div class="field" style="margin-top:8px; gap:8px">
+          <input id="commentAuthor" placeholder="Seu nome" class="ghost" style="padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--panel)" />
+          <button id="sendComment" class="btn">${t('comments.publish')}</button>
         </div>
       </div>
     </section>
   `,
-  '/perfil': ()=>`
-    <section class="panel card">
-      <h2>${t('profile.title')}</h2>
-      <div class="chips" id="badgesWrap"></div>
-      <p class="muted" id="badgesEmpty">${t('profile.empty')}</p>
-    </section>
-  `,
-  '/sobre': ()=>`
-    <section class="panel card">
-      <h2>Sobre</h2>
-      <p>Projeto demonstra: roteamento, i18n, tema dinâmico, busca com realce, TTS, comentários offline, notas com Markdown (preview), exportação via impressão, modo apresentação, gamificação e PWA.</p>
-      <div class="list">
-        <div class="row"><span class="muted">Atalhos</span> <span><kbd>/</kbd> buscar • <kbd>Alt</kbd>+<kbd>K</kbd> painel • <kbd>Alt</kbd>+<kbd>R</kbd> TTS • <kbd>Alt</kbd>+<kbd>P</kbd> slides • <kbd>Alt</kbd>+<kbd>M</kbd> leitura • <kbd>Alt</kbd>+<kbd>I</kbd> idioma</span></div>
-        <div class="row"><span class="muted">Rotas</span> <span>#/, #/vida, #/obras, #/conceitos, #/frases, #/linha, #/quiz, #/notas, #/comentarios, #/perfil, #/sobre</span></div>
-      </div>
+  '/sobre': () => `
+    <section class="panel">
+      <h2>${t('about.title')}</h2>
+      <p class="muted">${t('about.desc')}</p>
+      <p class="muted">Atalhos: <kbd>/</kbd> buscar • <kbd>ALT</kbd>+<kbd>T</kbd> tema • <kbd>ALT</kbd>+<kbd>L</kbd> idioma</p>
     </section>
   `
 };
 
-function award(badge){
-  if(!state.badges.includes(badge)){
-    state.badges.push(badge);
-    persist();
-  }
-}
-function trackVisit(route){
-  if(!state.visited.includes(route)){
-    state.visited.push(route);
-    persist();
-    if(state.visited.length===3) award('Explorador Iniciante');
-    if(state.visited.length===6) award('Estudioso');
-    if(state.visited.length===10) award('Enciclopedista');
-  }
-}
-
-/* ==========================================================
-   Renderização e pós-render
-========================================================== */
+/* =============================
+   Router + render
+============================= */
 function render(){
-  const hash=location.hash.replace('#','')||'/';
-  $('#routeTag').textContent=hash;
-  $$('#app [data-route]').forEach(a=> a.classList.toggle('active', a.getAttribute('href')=== '#' + hash));
-  const view = routes[hash]? routes[hash]() : `<section class="panel card"><h2>404</h2><p>Página não encontrada.</p></section>`;
-  const container=$('#view');
+  const hash = location.hash.replace('#','') || '/';
+  $$('#menu [data-route]').forEach(a => a.classList.toggle('active', a.getAttribute('href')==='#'+hash));
+  const view = routes[hash] ? routes[hash]() : `<section class="panel"><h2>404</h2><p>Página não encontrada.</p></section>`;
+  const container = $('#main');
   container.setAttribute('aria-busy','true');
-  container.innerHTML=view;
+  container.innerHTML = view;
   container.setAttribute('aria-busy','false');
-
-  // Pós-render específicos
-  if(hash==='/obras'){
-    const renderWorks=()=>{
-      const val=$('#workFilter').value;
-      const arr=DATA.works.filter(w=>{
-        if(val==='<=400') return w.year<=400;
-        if(val==='>400') return w.year>400;
-        return true;
-      });
-      $('#worksWrap').innerHTML = arr.map(o=>comp.card(`${o.title} <span class="tag">${o.year}</span>`, `${o.desc} <br><em>Tema:</em> ${o.theme}`)).join('');
-    };
-    $('#workFilter').onchange=renderWorks; renderWorks();
-  }
-  if(hash==='/quiz') initQuiz();
-  if(hash==='/notas') initNotes();
-  if(hash==='/comentarios') initComments();
-  if(hash==='/perfil') initProfile();
-
+  postRender(hash);
   indexSearch();
-  observePanels();
   window.scrollTo({top:0, behavior:'smooth'});
-  trackVisit(hash);
 }
 window.addEventListener('hashchange', render);
 
-/* ==========================================================
-   Quiz (módulo dinâmico via Blob)
-========================================================== */
-async function initQuiz(){
-  const code=`export const Q=[
+/* =============================
+   Pós-render por rota
+============================= */
+function postRender(hash){
+  if(hash==='/obras'){
+    const grid = $('#worksGrid');
+    const draw = ()=>{
+      const f = $('#workFilter').value;
+      const arr = DATA.works.filter(w => f==='all' ? true : (f==='<=400'? w.year<=400 : w.year>400));
+      grid.innerHTML = arr.map(o=>`
+        <div class="card panel">
+          <h3>${o.title} <span class="tag">${o.year}</span></h3>
+          <p class="muted">${o.desc} • <em>${o.theme}</em></p>
+        </div>`).join('');
+    };
+    $('#workFilter').onchange = draw; draw();
+  }
+  if(hash==='/quiz'){ initQuiz(); }
+  if(hash==='/notas'){ initNotes(); }
+  if(hash==='/comentarios'){ initComments(); }
+}
+
+/* =============================
+   Busca com realce
+============================= */
+let SEARCH_INDEX = [];
+function indexSearch(){
+  SEARCH_INDEX.length = 0;
+  $$('#main h1, #main h2, #main h3, #main p, #main li').forEach(el=>{
+    SEARCH_INDEX.push({el, text: el.textContent.toLowerCase()});
+  });
+}
+function clearMarks(){ $$('#main mark').forEach(m=> m.replaceWith(document.createTextNode(m.textContent))); }
+$('#search').addEventListener('input', e=>{
+  const term = e.target.value.trim().toLowerCase();
+  clearMarks();
+  if(!term) return;
+  SEARCH_INDEX.forEach(({el, text})=>{
+    if(text.includes(term) && el.childNodes.length===1 && el.childNodes[0].nodeType===3){
+      const raw = el.textContent;
+      const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig');
+      el.innerHTML = raw.replace(re, m=>`<mark>${m}</mark>`);
+    }
+  });
+  const first = $('#main mark'); if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+});
+// atalho de teclado para buscar
+window.addEventListener('keydown', e=>{
+  if(e.key==='/' && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){
+    e.preventDefault(); $('#search').focus();
+  }
+});
+
+/* =============================
+   Quiz simples
+============================= */
+function initQuiz(){
+  const Q = [
     {q:'Em que ano Agostinho foi batizado?', a:['354','387','410','430'], c:1},
     {q:'Qual obra responde à queda de Roma?', a:['Confissões','De Trinitate','A Cidade de Deus','Enchiridion'], c:2},
-    {q:'Para Agostinho, o tempo é...', a:['Absoluto e externo','Distensão da alma','Apenas físico','Idêntico à eternidade'], c:1}
-  ];`;
-  const blob=new Blob([code],{type:'text/javascript'});
-  const url=URL.createObjectURL(blob);
-  const mod=await import(url);
-  const form=$('#quizForm');
-  form.innerHTML = mod.Q.map((p,i)=>`
-    <div class="panel card" style="background:var(--panel-2)">
-      <strong>${i+1}. ${p.q}</strong>
-      ${p.a.map((opt,j)=>`<div><label><input type="radio" name="q${i}" value="${j}"> ${opt}</label></div>`).join('')}
-    </div>`).join('');
-  $('#submitQuiz').onclick=(e)=>{
-    e.preventDefault();
-    let score=0;
-    mod.Q.forEach((p,i)=>{
+    {q:'Para Agostinho, o tempo é…', a:['Absoluto','Distensão da alma','Apenas físico','Idêntico à eternidade'], c:1}
+  ];
+  const form = $('#quizForm');
+  form.innerHTML = Q.map((p,i)=>`
+    <fieldset class="panel" style="background:var(--panel-2)">
+      <legend><strong>${i+1}. ${p.q}</strong></legend>
+      ${p.a.map((opt,j)=>`<label style="display:block;margin:.25rem 0"><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`).join('')}
+    </fieldset>
+  `).join('');
+  $('#submitQuiz').onclick = (ev)=>{
+    ev.preventDefault();
+    let score=0; Q.forEach((p,i)=>{
       const v=(new FormData(form)).get('q'+i);
       if(Number(v)===p.c) score++;
     });
-    $('#quizScore').textContent=`Pontuação: ${score}/${mod.Q.length}`;
-    if(score===mod.Q.length) award('Mestre do Quiz');
+    $('#quizScore').textContent = `Pontuação: ${score}/${Q.length}`;
   };
 }
 
-/* ==========================================================
-   Notas (Markdown + preview + exportação)
-========================================================== */
+/* =============================
+   Notas (Markdown + preview + impressão)
+============================= */
 function mdToHtml(md){
-  // parserzinho suficiente p/ demo
-  let h=md
-    .replace(/^### (.*$)/gim,'<h3>$1</h3>')
-    .replace(/^## (.*$)/gim,'<h2>$1</h2>')
-    .replace(/^# (.*$)/gim,'<h1>$1</h1>')
+  let h = md
+    .replace(/^### (.*)$/gim,'<h3>$1</h3>')
+    .replace(/^## (.*)$/gim,'<h2>$1</h2>')
+    .replace(/^# (.*)$/gim,'<h1>$1</h1>')
     .replace(/\*\*(.*?)\*\*/gim,'<strong>$1</strong>')
     .replace(/\*(.*?)\*/gim,'<em>$1</em>')
     .replace(/`([^`]+)`/gim,'<code>$1</code>')
     .replace(/^\s*-\s+(.*)$/gim,'<li>$1</li>');
-  h=h.replace(/(<li>.*<\/li>)/gims,'<ul>$1</ul>');
-  h=h.replace(/\n{2,}/g,'<br/><br/>');
+  h = h.replace(/(<li>.*<\/li>)/gims,'<ul>$1</ul>');
+  h = h.replace(/\n{2,}/g,'<br/><br/>');
   return h.trim();
 }
 function initNotes(){
   const key='notes-md';
-  const input=$('#mdInput'), preview=$('#mdPreview');
+  const input=$('#mdInput'), prev=$('#mdPreview');
   input.value = localStorage.getItem(key) || '';
-  preview.innerHTML = mdToHtml(input.value||'');
-  input.addEventListener('input', ()=>{ preview.innerHTML=mdToHtml(input.value); });
-  $('#saveNote').onclick=(e)=>{ e.preventDefault(); localStorage.setItem(key,input.value); flash('Nota salva ✓'); award('Anotador'); };
-  $('#exportPDF').onclick=(e)=>{
+  prev.innerHTML = mdToHtml(input.value || '');
+  input.addEventListener('input', ()=> prev.innerHTML = mdToHtml(input.value));
+  $('#saveNote').onclick = (e)=>{ e.preventDefault(); localStorage.setItem(key, input.value); toast('Nota salva'); };
+  $('#printNote').onclick = (e)=>{
     e.preventDefault();
     const w=window.open('','_blank');
-    w.document.write(`<!DOCTYPE html><title>Notas</title><style>body{font-family:Inter,Arial;padding:24px} h1,h2,h3{margin:.2em 0} code{background:#eee;padding:2px 4px;border-radius:4px}</style>${preview.innerHTML}`);
+    w.document.write(`<!doctype html><title>Notas</title><style>body{font-family:system-ui,Arial;padding:24px} h1,h2,h3{margin:.5em 0}</style>${prev.innerHTML}`);
     w.document.close(); w.focus(); w.print();
   };
 }
 
-/* ==========================================================
-   Comentários (offline por rota)
-========================================================== */
+/* =============================
+   Comentários offline por rota
+============================= */
 function commentsKey(){ return 'comments:'+ (location.hash.replace('#','')||'/'); }
 function loadComments(){ return JSON.parse(localStorage.getItem(commentsKey())||'[]'); }
 function saveComments(arr){ localStorage.setItem(commentsKey(), JSON.stringify(arr)); }
 function initComments(){
-  const list=$('#commentsList');
-  const renderList=()=>{
-    const arr=loadComments();
+  const list = $('#commentsList');
+  const renderList = ()=>{
+    const arr = loadComments();
     if(arr.length===0){ list.innerHTML = `<p class="muted">${t('comments.empty')}</p>`; return; }
     list.innerHTML = arr.map(c=>`
       <div class="comment">
-        <div class="toolbar"><strong>${c.author||'Anônimo'}</strong> <span class="muted">${new Date(c.ts).toLocaleString()}</span></div>
-        <p>${c.text.replace(/</g,'&lt;')}</p>
+        <div class="muted" style="font-size:.85rem">${c.author||'Anônimo'} • ${new Date(c.ts).toLocaleString()}</div>
+        <div>${c.text.replace(/</g,'&lt;')}</div>
       </div>`).join('');
   };
   renderList();
-  $('#sendComment').onclick=()=>{
-    const text=$('#commentText').value.trim();
+  $('#sendComment').onclick = ()=>{
+    const text = $('#commentText').value.trim();
     if(!text) return;
-    const author=$('#commentAuthor').value.trim();
-    const arr=loadComments();
-    arr.unshift({text,author,ts:Date.now()});
+    const author = $('#commentAuthor').value.trim();
+    const arr = loadComments();
+    arr.unshift({text, author, ts: Date.now()});
     saveComments(arr);
-    $('#commentText').value=''; renderList(); flash('Comentário publicado ✓'); award('Comentarista');
+    $('#commentText').value=''; renderList(); toast('Comentário publicado');
   };
 }
 
-/* ==========================================================
-   Perfil (medalhas)
-========================================================== */
-function initProfile(){
-  const w=$('#badgesWrap'), empty=$('#badgesEmpty');
-  w.innerHTML = state.badges.map(b=>`<span class="badge">🏅 ${b}</span>`).join(' ');
-  empty.style.display = state.badges.length? 'none':'block';
+/* =============================
+   UI simples
+============================= */
+function toast(msg){
+  const el=document.createElement('div');
+  el.textContent = msg;
+  Object.assign(el.style,{position:'fixed',left:'50%',bottom:'20px',transform:'translateX(-50%)',padding:'8px 12px',background:'var(--panel)',border:'1px solid var(--border)',borderRadius:'10px',zIndex:10});
+  document.body.appendChild(el); setTimeout(()=> el.remove(),1400);
 }
-
-/* ==========================================================
-   UI / Ações globais
-========================================================== */
-$('#toggleTheme').onclick=()=>{ state.theme=state.theme==='light'?'dark':'light'; persist(); applyState(); };
-$('#accentPicker').addEventListener('input',e=>{ state.accent=e.target.value; persist(); applyState(); });
-$('#fontPlus').onclick=()=>{ state.fontSize=Math.min(22,state.fontSize+1); persist(); applyState(); };
-$('#fontMinus').onclick=()=>{ state.fontSize=Math.max(12,state.fontSize-1); persist(); applyState(); };
-$('#maxWidth').addEventListener('input',e=>{ state.maxw=+e.target.value; persist(); applyState(); });
-$('#radius').addEventListener('input',e=>{ state.radius=+e.target.value; persist(); applyState(); });
-$('#openCustomizer').onclick=()=> $('#drawer').classList.toggle('open');
-$('#fabTop').onclick=()=> window.scrollTo({top:0, behavior:'smooth'});
-$('#langSel').onchange=()=>{ state.lang=$('#langSel').value; persist(); applyI18n(); render(); };
-
-// atalhos
-window.addEventListener('keydown',e=>{
-  if(e.key==='/' && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); $('#search').focus(); }
-  if(e.altKey && (e.key==='k'||e.key==='K')){ e.preventDefault(); $('#drawer').classList.toggle('open'); }
-  if(e.altKey && (e.key==='r'||e.key==='R')){ e.preventDefault(); speakView(); }
-  if(e.altKey && (e.key==='p'||e.key==='P')){ e.preventDefault(); startSlides(); }
-  if(e.altKey && (e.key==='m'||e.key==='M')){ e.preventDefault(); document.body.classList.toggle('immersive'); }
-  if(e.altKey && (e.key==='i'||e.key==='I')){ e.preventDefault(); state.lang = state.lang==='pt'?'en':'pt'; persist(); applyI18n(); render(); }
+$('#themeBtn').onclick = ()=>{
+  state.theme = (state.theme==='light'?'dark':'light');
+  document.body.setAttribute('data-theme', state.theme);
+  save('theme', state.theme);
+};
+$('#langSel').onchange = ()=>{
+  state.lang = $('#langSel').value; save('lang', state.lang); applyI18n(); render();
+};
+// atalhos: ALT+T tema / ALT+L idioma
+window.addEventListener('keydown', e=>{
+  if(e.altKey && (e.key==='t'||e.key==='T')) { e.preventDefault(); $('#themeBtn').click(); }
+  if(e.altKey && (e.key==='l'||e.key==='L')) { e.preventDefault(); state.lang = state.lang==='pt'?'en':'pt'; $('#langSel').value=state.lang; save('lang',state.lang); applyI18n(); render(); }
 });
 
-// busca
-$('#search').addEventListener('input', e=> doSearch(e.target.value));
-
-// animação de painéis
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(en=>{ if(en.isIntersecting){ en.target.style.transform='translateY(0)'; en.target.style.opacity='1'; }});
-},{threshold:.2});
-function observePanels(){
-  $$('#view .panel').forEach(el=>{
-    el.style.transform='translateY(8px)'; el.style.opacity='.0'; el.style.transition='all .35s ease'; io.observe(el);
-  });
-}
-
-// flash msg
-function flash(msg){
-  const b=document.createElement('div');
-  b.textContent=msg;
-  Object.assign(b.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',padding:'10px 14px',borderRadius:'10px',background:'var(--panel)',border:'1px solid rgba(255,255,255,.16)',boxShadow:'var(--shadow)',zIndex:40});
-  document.body.appendChild(b);
-  setTimeout(()=>b.remove(),1600);
-}
-
-// TTS
-function viewText(){ return $('#view').innerText.replace(/\s+/g,' ').trim(); }
-function speakView(){
-  if(!('speechSynthesis' in window)) return flash('TTS não suportado');
-  speechSynthesis.cancel();
-  const utter=new SpeechSynthesisUtterance(viewText());
-  utter.lang = state.lang==='pt'?'pt-BR':'en-US';
-  speechSynthesis.speak(utter);
-}
-$('#ttsBtn').onclick=speakView;
-
-// Modo leitura imersiva
-$('#immersiveBtn').onclick=()=> document.body.classList.toggle('immersive');
-
-// Apresentação (slides)
-let slides=[], slideIdx=0;
-function makeSlidesFromView(){
-  const nodes=$$('#view h1, #view h2, #view h3, #view p, #view li');
-  const segments=[]; let cur=[];
-  nodes.forEach(n=>{
-    if(/^H[1-3]$/.test(n.tagName)){ if(cur.length) {segments.push(cur); cur=[];} cur.push(n.outerHTML); }
-    else cur.push(n.outerHTML);
-  });
-  if(cur.length) segments.push(cur);
-  return segments.map(s=>`<div>${s.join('')}</div>`);
-}
-function startSlides(){
-  slides = makeSlidesFromView(); if(!slides.length){ flash('Nada para apresentar'); return; }
-  slideIdx=0; $('#slideContent').innerHTML=slides[0]; $('#slides').classList.add('active'); $('#slides').setAttribute('aria-hidden','false');
-}
-function endSlides(){ $('#slides').classList.remove('active'); $('#slides').setAttribute('aria-hidden','true'); }
-function nextSlide(){ if(slideIdx<slides.length-1){ slideIdx++; $('#slideContent').innerHTML=slides[slideIdx]; } }
-function prevSlide(){ if(slideIdx>0){ slideIdx--; $('#slideContent').innerHTML=slides[slideIdx]; } }
-$('#presentBtn').onclick=startSlides;
-$('#slides').addEventListener('click',()=> nextSlide());
-window.addEventListener('keydown',e=>{
-  if(!$('#slides').classList.contains('active')) return;
-  if(e.key==='Escape') endSlides();
-  if(e.key==='ArrowRight' || e.key===' ') nextSlide();
-  if(e.key==='ArrowLeft') prevSlide();
-});
-
-// primeira renderização + i18n
+/* =============================
+   Inicialização
+============================= */
 applyI18n();
 render();
 
-/* ==========================================================
-   SEO e Schema
-========================================================== */
-const ld={
-  '@context':'https://schema.org','@type':'Person',name:'Aurelius Augustinus',alternateName:'Santo Agostinho',
-  birthDate:'0354-11-13',deathDate:'0430-08-28', sameAs:['https://pt.wikipedia.org/wiki/Agostinho_de_Hipona']
+/* =============================
+   Schema/SEO mínimo
+============================= */
+const ld = {
+  '@context':'https://schema.org','@type':'Person',
+  name:'Aurelius Augustinus','alternateName':'Santo Agostinho',
+  birthDate:'0354-11-13','deathDate':'0430-08-28',
+  sameAs:['https://pt.wikipedia.org/wiki/Agostinho_de_Hipona']
 };
-const script=document.createElement('script'); script.type='application/ld+json'; script.textContent=JSON.stringify(ld); document.head.appendChild(script);
+const s=document.createElement('script'); s.type='application/ld+json'; s.textContent=JSON.stringify(ld); document.head.appendChild(s);
 
-/* ==========================================================
-   PWA: Service Worker (via Blob)
-========================================================== */
+/* =============================
+   PWA básico (SW via Blob)
+============================= */
 if('serviceWorker' in navigator){
-  const swCode=`
-    const CACHE='agostinho-v2';
+  const sw = `
+    const CACHE='agostinho-min-v1';
     self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./']))); self.skipWaiting();});
-    self.addEventListener('activate',e=> self.clients.claim());
+    self.addEventListener('activate',e=>self.clients.claim());
     self.addEventListener('fetch',e=>{
       e.respondWith(
         caches.match(e.request).then(r=> r || fetch(e.request).then(res=>{
@@ -782,8 +514,7 @@ if('serviceWorker' in navigator){
       );
     });
   `;
-  const swBlob=new Blob([swCode],{type:'text/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'})));
 }
 </script>
 </body>
